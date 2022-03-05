@@ -1,9 +1,8 @@
-cat ~/.br-follows | tr ' ' '\n' | \
+echo -e "$(cat ~/.br-follows | tr ' ' '\n' | \
     while read u; do read url;
-        # echo curl -s $url?$RANDOM;
-        content=$(curl -s $url?$RANDOM \
-            | sort -nr \
-            | sed 's/^[0-9]* //g' \
-            | xargs -I @ echo "$u: @" \
-            | grep -E --color=always "\@$USERNAME|$");
-        echo "$content"; done
+        curl -s $url?$RANDOM \
+            | sed "s/^\([0-9]*\) /"$u": \1 /g" ; done)" \
+            | sort -nr -k2 \
+            | awk '{$2 = "\b"; print $0}' \
+            | grep -E --color=always "\@$USERNAME|$"
+
